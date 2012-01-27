@@ -160,7 +160,20 @@ int dhcp_do_request(const char *interface,
         fill_ip_info(interface, ipaddr, gateway, mask, dns1, dns2, server, lease);
         return 0;
     } else {
-        snprintf(errmsg, sizeof(errmsg), "DHCP result was %s", prop_value);
+		// WIMM
+		// The script /etc/dhcpcd/dhcpcd-hooks/95-configured will also set the property "reason". 
+		// Let's print that out for extra help when debugging.
+		char reason_prop_name[PROPERTY_KEY_MAX];
+		char prop_reason[PROPERTY_VALUE_MAX] = {'\0'};
+		snprintf(reason_prop_name, sizeof(reason_prop_name), "%s.%s.reason",
+				 DHCP_PROP_NAME_PREFIX,
+				 interface);
+		if (property_get(reason_prop_name, prop_reason, NULL)) {
+			snprintf(errmsg, sizeof(errmsg), "DHCP result was %s (%s)", prop_value, prop_reason);
+		} else {	
+			snprintf(errmsg, sizeof(errmsg), "DHCP result was %s", prop_value);
+		}
+	
         return -1;
     }
 }

@@ -37,7 +37,7 @@
 #include "volmgr_ext3.h"
 #include "volmgr_vfat.h"
 
-#define DEBUG_VOLMGR 0
+#define DEBUG_VOLMGR  1 //0
 
 static volume_t *vol_root = NULL;
 static boolean safe_mode = true;

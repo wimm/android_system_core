@@ -130,7 +130,9 @@ int vfat_mount(blkdev_t *dev, volume_t *vol, boolean safe_mode)
          * 3. Others can only RX
          */
         rc = mount(devpath, vol->mount_point, "vfat", flags,
-                "utf8,uid=1000,gid=1015,fmask=702,dmask=702,shortname=mixed");
+// keith 2011.04.21 - allows updater to access sd card, but is there a better way?
+//                "utf8,uid=1000,gid=1015,fmask=702,dmask=702,shortname=mixed");
+                "utf8,uid=1000,gid=1015,fmask=111,dmask=000,shortname=mixed");
     }
 
     if (rc && errno == EROFS) {
@@ -138,7 +140,9 @@ int vfat_mount(blkdev_t *dev, volume_t *vol, boolean safe_mode)
              dev->major, dev->minor, vol->mount_point);
         flags |= MS_RDONLY;
         rc = mount(devpath, vol->mount_point, "vfat", flags,
-                   "utf8,uid=1000,gid=1015,fmask=702,dmask=702,shortname=mixed");
+// keith 2011.04.21 - allows updater to access sd card, but is there a better way?
+//                "utf8,uid=1000,gid=1015,fmask=702,dmask=702,shortname=mixed");
+                "utf8,uid=1000,gid=1015,fmask=111,dmask=000,shortname=mixed");
     }
 
     if (rc == 0) {

@@ -150,6 +150,18 @@ static int mmc_bootstrap_card(char *sysfs_path)
 
     sprintf(filename, "/sys%s/type", devpath);
     p = read_file(filename, &sz);
+	if(p)
+	{
+	#if DEBUG_BOOTSTRAP
+    	LOG_VOL("read_file (%s) successful\n",filename);
+	#endif
+
+	}
+	else
+	{
+	LOGE("read_file (%s) fail\n",filename);
+	 return -errno;
+	}
     p[strlen(p) - 1] = '\0';
     sprintf(tmp, "MMC_TYPE=%s", p);
     free(p);
@@ -157,6 +169,18 @@ static int mmc_bootstrap_card(char *sysfs_path)
 
     sprintf(filename, "/sys%s/name", devpath);
     p = read_file(filename, &sz);
+		if(p)
+	{
+	#if DEBUG_BOOTSTRAP
+    	LOG_VOL("read_file (%s) successful\n",filename);
+	#endif
+
+	}
+	else
+	{
+	LOGE("read_file (%s) fail\n",filename);
+	 return -errno;
+	}
     p[strlen(p) - 1] = '\0';
     sprintf(tmp, "MMC_NAME=%s", p);
     free(p);
@@ -173,6 +197,34 @@ static int mmc_bootstrap_card(char *sysfs_path)
      *  Check for block drivers
      */
     char block_devpath[255];
+
+#ifdef SLSI_S5P6442
+    /* Support for mmcblk1 : scan mmcblk1 first and then scan mmcblk0 */
+    /* The SDCARD can be mmcblk1 very rarly when user removes sdcard and then attaches it very fast */
+
+    sprintf(tmp, "%s/block:mmcblk1", devpath);
+    sprintf(filename, "/sys%s/block:mmcblk1", devpath);
+
+    LOG_VOL("mmc_bootstrap_card:filename %s",filename);
+ 	
+    if (!access(filename, F_OK)) {
+        if (mmc_bootstrap_mmcblk(tmp)) {
+            LOGE("Error bootstrapping mmcblk @ %s", tmp);
+        }
+    }
+
+    sprintf(tmp, "%s/block:mmcblk0", devpath);
+    sprintf(filename, "/sys%s/block:mmcblk0", devpath);
+
+    LOG_VOL("mmc_bootstrap_card:filename %s",filename);
+ 	
+    if (!access(filename, F_OK)) {
+        if (mmc_bootstrap_mmcblk(tmp)) {
+            LOGE("Error bootstrapping mmcblk @ %s", tmp);
+        }
+    }
+
+#else /* SLSI_S5P6442 */
     sprintf(tmp, "%s/block", devpath);
     sprintf(filename, "/sys%s/block", devpath);
     if (!access(filename, F_OK)) {
@@ -180,10 +232,13 @@ static int mmc_bootstrap_card(char *sysfs_path)
             LOGE("Error bootstrapping block @ %s", tmp);
         }
     }
+#endif /* SLSI_S5P6442 */
 
     return 0;
 }
 
+#ifdef SLSI_S5P6442
+#else /* SLSI_S5P6442 */
 static int mmc_bootstrap_block(char *devpath)
 {
     char blockdir_path[255];
@@ -213,6 +268,7 @@ static int mmc_bootstrap_block(char *devpath)
     closedir(d);
     return 0;
 }
+#endif /* SLSI_S5P6442 */
 
 static int mmc_bootstrap_mmcblk(char *devpath)
 {
@@ -229,8 +285,13 @@ static int mmc_bootstrap_mmcblk(char *devpath)
         return rc;
     }
 
+#ifdef SLSI_S5P6442
+    for (mmcblk_devname = &devpath[strlen(devpath)];
+         *mmcblk_devname != ':'; mmcblk_devname--);
+#else /* SLSI_S5P6442 */
     for (mmcblk_devname = &devpath[strlen(devpath)];
          *mmcblk_devname != '/'; mmcblk_devname--);
+#endif /* SLSI_S5P6442 */
     mmcblk_devname++;
 
     for (part_no = 0; part_no < 4; part_no++) {
@@ -279,6 +340,10 @@ static int mmc_bootstrap_mmcblk_partition(char *devpath)
             uevent_params[2] = strdup(line);
         else if (!strncmp(line, "MINOR=",6)) 
             uevent_params[3] = strdup(line);
+#ifdef SLSI_S5P6442
+        else if (!strncmp(line, "PHYSDEVPATH=",12)) 
+            uevent_params[4] = strdup(line);
+#endif /* SLSI_S5P6442 */
     }
     fclose(fp);
 
@@ -286,7 +351,11 @@ static int mmc_bootstrap_mmcblk_partition(char *devpath)
         LOGE("mmcblk uevent missing required params");
         return -1;
     }
+#ifdef SLSI_S5P6442
+    uevent_params[5] = '\0';
+#else /* SLSI_S5P6442 */
     uevent_params[4] = '\0';
+#endif /* SLSI_S5P6442 */
     
     if (simulate_uevent("block", devpath, "add", uevent_params) < 0) {
         LOGE("Error simulating uevent (%s)", strerror(errno));

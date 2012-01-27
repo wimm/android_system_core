@@ -46,6 +46,12 @@
 #include "property_service.h"
 #include "bootchart.h"
 
+#ifndef NO_WIMM_MODS
+int checkfactoryreset();
+int clearfactoryreset();
+int verify_system();
+#endif
+
 static int property_triggers_enabled = 0;
 
 #if BOOTCHART
@@ -878,16 +884,14 @@ int main(int argc, char **argv)
         "\n"
         "\n"
         "\n"
-        "\n"
         "\n"  // console is 40 cols x 30 lines
+        "   A N D R O I D P2.0 V14\n"
         "\n"
         "\n"
         "\n"
         "\n"
         "\n"
-        "\n"
-        "\n"
-        "             A N D R O I D ";
+        "\n";
         write(fd, msg, strlen(msg));
         close(fd);
     }
@@ -903,7 +907,12 @@ int main(int argc, char **argv)
     else
         property_set("ro.factorytest", "0");
 
+#ifndef NO_WIMM_MODS
+    if (serialno[0])
+        property_set("ro.serialno", serialno);
+#else
     property_set("ro.serialno", serialno[0] ? serialno : "");
+#endif
     property_set("ro.bootmode", bootmode[0] ? bootmode : "unknown");
     property_set("ro.baseband", baseband[0] ? baseband : "unknown");
     property_set("ro.carrier", carrier[0] ? carrier : "unknown");
@@ -912,6 +921,15 @@ int main(int argc, char **argv)
     property_set("ro.hardware", hardware);
     snprintf(tmp, PROP_VALUE_MAX, "%d", revision);
     property_set("ro.revision", tmp);
+
+#ifndef NO_WIMM_MODS
+    verify_system();
+#endif
+
+#ifndef NO_WIMM_MODS
+    // this has to be done after property_init but before init actions are called
+    checkfactoryreset();
+#endif
 
         /* execute all the boot actions to get us started */
     action_for_each_trigger("init", action_add_queue_tail);
@@ -923,6 +941,11 @@ int main(int argc, char **argv)
          * that /data/local.prop cannot interfere with them.
          */
     property_set_fd = start_property_service();
+
+#ifndef NO_WIMM_MODS
+    // this has to be done after start_property_service
+    clearfactoryreset();
+#endif
 
     /* create a signalling mechanism for the sigchld handler */
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, s) == 0) {

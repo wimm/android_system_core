@@ -52,6 +52,12 @@ enum GGLPixelFormat {
     GGL_PIXEL_FORMAT_S_8        =  0x19,
     GGL_PIXEL_FORMAT_SZ_24      =  0x1A,
     GGL_PIXEL_FORMAT_SZ_8       =  0x1B,
+#ifdef SLSI_S5P6442
+	// added by jamie to support customed format for zero copy (2009.07.02)
+	GGL_PIXEL_FORMAT_CUSTOM_YCbCr_420_SP = 0x20,
+	GGL_PIXEL_FORMAT_CUSTOM_YCbCr_422_I = 0x21,
+	GGL_PIXEL_FORMAT_CUSTOM_CbYCr_422_I = 0x22, //Kamat
+#endif /* SLSI_S5P6442 */
 };
 
 enum GGLFormatComponents {
@@ -66,6 +72,9 @@ enum GGLFormatComponents {
     GGL_Y_CB_CR             = GGL_Y_CB_CR_SP,
     GGL_Y_CB_CR_P           = 0x8001,
     GGL_Y_CB_CR_I           = 0x8002,
+#ifdef SLSI_S5P6442
+    GGL_CB_Y_CR_I           = 0x8003, //Kamat
+#endif /* SLSI_S5P6442 */
 };
 
 enum GGLFormatComponentIndex {

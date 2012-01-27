@@ -112,6 +112,10 @@ static boolean CheckFileDescriptorSymLinks(int pid, const char* mountPoint)
         {
             char    name[PATH_MAX];
             GetProcessName(pid, name);
+            // keith 2011.04.21 - FIXME hack, hopefully temporary
+            // don't kill upgrade in progress
+            if (strstr(name, "update") != NULL)
+                continue;
             LOG_ERROR("process %s (%d) has open file %s", name, pid, link);
             fileOpen = true;
         }
@@ -140,6 +144,10 @@ static boolean CheckFileMaps(int pid, const char* mountPoint)
         {
             char    name[PATH_MAX];
             GetProcessName(pid, name);
+            // keith 2011.04.21 - FIXME hack, hopefully temporary
+            // don't kill upgrade in progress
+            if (strstr(name, "update") != NULL)
+                continue;
             LOG_ERROR("process %s (%d) has open file map for %s", name, pid, path);
             mapOpen = true;
         }

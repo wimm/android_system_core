@@ -91,6 +91,9 @@ static struct perms_ devperms[] = {
     { "/dev/urandom",       0666,   AID_ROOT,       AID_ROOT,       0 },
     { "/dev/ashmem",        0666,   AID_ROOT,       AID_ROOT,       0 },
     { "/dev/binder",        0666,   AID_ROOT,       AID_ROOT,       0 },
+#ifdef SLSI_S5P6442
+    { "/dev/mem",           0666,   AID_ROOT,       AID_ROOT,       0 },
+#endif /* SLSI_S5P6442 */
 
 	    /* logger should be world writable (for logging) but not readable */
     { "/dev/log/",          0662,   AID_ROOT,       AID_LOG,        1 },
@@ -100,6 +103,11 @@ static struct perms_ devperms[] = {
 
     /* gpu driver for adreno200 is globally accessible */
     { "/dev/kgsl",          0666,   AID_ROOT,       AID_ROOT,       0 },
+#ifdef SLSI_S5P6442
+    /* STOPSHIP: temporarily make this be writable by all. We need to
+     * remove this entirely before we ship. */
+    { "/dev/pmem_gpu",      0666,   AID_ROOT,       AID_ROOT,       1 },
+#endif /* SLSI_S5P6442 */
 
         /* these should not be world writable */
     { "/dev/diag",          0660,   AID_RADIO,      AID_RADIO,        0 },
@@ -117,8 +125,18 @@ static struct perms_ devperms[] = {
     { "/dev/eac",           0660,   AID_ROOT,       AID_AUDIO,      0 },
     { "/dev/cam",           0660,   AID_ROOT,       AID_CAMERA,     0 },
     { "/dev/pmem",          0660,   AID_SYSTEM,     AID_GRAPHICS,   0 },
+#ifdef SLSI_S5P6442
+    { "/dev/pmem_gpu1",     0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_render",   0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_stream",   0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_preview",  0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_picture",  0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_jpeg",     0666,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_skia",     0666,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+#else /* SLSI_S5P6442 */
     { "/dev/pmem_adsp",     0660,   AID_SYSTEM,     AID_AUDIO,      1 },
     { "/dev/pmem_camera",   0660,   AID_SYSTEM,     AID_CAMERA,     1 },
+#endif /* SLSI_S5P6442 */
     { "/dev/oncrpc/",       0660,   AID_ROOT,       AID_SYSTEM,     1 },
     { "/dev/adsp/",         0660,   AID_SYSTEM,     AID_AUDIO,      1 },
     { "/dev/mt9t013",       0660,   AID_SYSTEM,     AID_SYSTEM,     0 },
@@ -141,7 +159,10 @@ static struct perms_ devperms[] = {
     { "/dev/msm_audio_ctl", 0660,   AID_SYSTEM,     AID_AUDIO,      0 },
     { "/dev/htc-acoustic",  0660,   AID_SYSTEM,     AID_AUDIO,      0 },
     { "/dev/vdec",          0660,   AID_SYSTEM,     AID_AUDIO,      0 },
+#ifdef SLSI_S5P6442
+#else /* SLSI_S5P6442 */
     { "/dev/q6venc",        0660,   AID_SYSTEM,     AID_AUDIO,      0 },
+#endif /* SLSI_S5P6442 */
     { "/dev/snd/dsp",       0660,   AID_SYSTEM,     AID_AUDIO,      0 },
     { "/dev/snd/dsp1",      0660,   AID_SYSTEM,     AID_AUDIO,      0 },
     { "/dev/snd/mixer",     0660,   AID_SYSTEM,     AID_AUDIO,      0 },
@@ -151,10 +172,36 @@ static struct perms_ devperms[] = {
     { "/dev/qmi0",          0640,   AID_RADIO,      AID_RADIO,      0 },
     { "/dev/qmi1",          0640,   AID_RADIO,      AID_RADIO,      0 },
     { "/dev/qmi2",          0640,   AID_RADIO,      AID_RADIO,      0 },
+#ifdef SLSI_S5P6442
+    { "/dev/snd",	    0664,   AID_ROOT,	    AID_AUDIO,		1 },
+		/* for s5p6442 */
+    { "/dev/s3c-mfc",  	    0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-rotator",   0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-jpg",       0666,   AID_SYSTEM,	    AID_CAMERA,   	1 },
+    { "/dev/s3c-g3d",       0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-pp",   	    0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-cmm", 	    0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-g2d", 	    0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-mem", 	    0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/graphics", 	    0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/video0",  	    0664,   AID_SYSTEM,	    AID_CAMERA,     1 },
+    { "/dev/video1",  	    0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+	{ "/dev/video2",  	    0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/dpram0",  	    0664,   AID_RADIO,	    AID_RADIO,      0 },
+    { "/dev/dpram1",  	    0664,   AID_RADIO,	    AID_RADIO,      0 },
+    { "/dev/i2c-5",			0666,	AID_AUDIO,		AID_AUDIO,		0 },
+    { "/dev/dpramerr", 	    0664,   AID_RADIO,	    AID_RADIO,      0 },
+    { "/dev/multipdp", 	    0664,   AID_RADIO,	    AID_RADIO,      0 },
+    { "/dev/s3c2410_serial0",0666,  AID_RADIO,      AID_RADIO,      0 },
+#endif /* SLSI_S5P6442 */
         /* CDMA radio interface MUX */
     { "/dev/ts0710mux",     0640,   AID_RADIO,      AID_RADIO,      1 },
     { "/dev/ppp",           0660,   AID_RADIO,      AID_VPN,        0 },
     { "/dev/tun",           0640,   AID_VPN,        AID_VPN,        0 },
+    /* yangxiaobin 20100811 add begin: set the permission of the geomagnetic sensor device file */
+    { "/dev/yas529",        0640,   AID_COMPASS,    AID_SYSTEM,     0 },
+    /* yangxiaobin 20100811 add end: set the permission of the geomagnetic sensor device file */
+
     { NULL, 0, 0, 0, 0 },
 };
 
@@ -389,13 +436,39 @@ static void handle_device_event(struct uevent *uevent)
         return;
 
         /* are we block or char? where should we live? */
+#ifdef SLSI_S5P6442
+    if(!strncmp(uevent->path, "/block", 6)) {
+#else /* SLSI_S5P6442 */
     if(!strncmp(uevent->subsystem, "block", 5)) {
+#endif /* SLSI_S5P6442 */
         block = 1;
         base = "/dev/block/";
         mkdir(base, 0755);
     } else {
         block = 0;
             /* this should probably be configurable somehow */
+#ifdef SLSI_S5P6442
+        if(!strncmp(uevent->path, "/class/graphics/", 16)) {
+            base = "/dev/graphics/";
+            mkdir(base, 0755);
+        } else if (!strncmp(uevent->path, "/class/oncrpc/", 14)) {
+            base = "/dev/oncrpc/";
+            mkdir(base, 0755);
+        } else if (!strncmp(uevent->path, "/class/adsp/", 12)) {
+            base = "/dev/adsp/";
+            mkdir(base, 0755);
+		} else if(!strncmp(uevent->path, "/class/input/", 13)) {
+            base = "/dev/input/";
+            mkdir(base, 0755);
+        } else if(!strncmp(uevent->path, "/class/mtd/", 11)) {
+            base = "/dev/mtd/";
+            mkdir(base, 0755);
+		} else if(!strncmp(uevent->subsystem, "sound", 5)) {
+			base = "/dev/snd/";
+			mkdir(base, 0755);
+        } else if(!strncmp(uevent->path, "/class/misc/", 12) &&
+                    !strncmp(name, "log_", 4)) {
+#else /* SLSI_S5P6442 */
         if(!strncmp(uevent->subsystem, "graphics", 8)) {
             base = "/dev/graphics/";
             mkdir(base, 0755);
@@ -419,6 +492,7 @@ static void handle_device_event(struct uevent *uevent)
             mkdir(base, 0755);
         } else if(!strncmp(uevent->subsystem, "misc", 4) &&
                     !strncmp(name, "log_", 4)) {
+#endif /* SLSI_S5P6442 */
             base = "/dev/log/";
             mkdir(base, 0755);
             name += 4;
@@ -579,6 +653,11 @@ void handle_device_fd(int fd)
         handle_device_event(&uevent);
         handle_firmware_event(&uevent);
     }
+#ifdef SLSI_S5P6442
+    mknod("/dev/block/stl7",S_IFBLK | 0600,(138<<8)|7);
+    mknod("/dev/block/stl8",S_IFBLK | 0600,(138<<8)|8);
+    mknod("/dev/block/stl9",S_IFBLK | 0600,(138<<8)|9);
+#endif /* SLSI_S5P6442 */
 }
 
 /* Coldboot walks parts of the /sys tree and pokes the uevent files

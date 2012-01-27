@@ -297,6 +297,10 @@ service dbus /system/bin/dbus-daemon --system --nofork
     user bluetooth
     group bluetooth net_bt_admin
 
+service hciattach /system/bin/hciattach -n  /dev/s3c2410_serial0 any
+	group bluetooth
+	disabled
+
 service bluetoothd /system/bin/bluetoothd -n
     socket bluetooth stream 660 bluetooth bluetooth
     socket dbus_bluetooth stream 660 bluetooth bluetooth

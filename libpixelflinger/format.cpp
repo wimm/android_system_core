@@ -53,6 +53,16 @@ static GGLFormat const gPixelFormatInfos[] =
     {  1,  8, {{  8, 0,  0, 0,   0, 0,   0, 0 }}, GGL_STENCIL_INDEX  },
     {  4, 24, {{  0, 0, 24, 0,   0, 0,   0, 0 }}, GGL_DEPTH_COMPONENT},
     {  4,  8, {{ 32,24,  0, 0,   0, 0,   0, 0 }}, GGL_STENCIL_INDEX  },
+#ifdef SLSI_S5P6442
+    // added by jamie to support customed format for zero copy (2009.07.02)
+    {  0,  0, {{ 0, 0,   0, 0,   0, 0,   0, 0 }},        0 },   // PIXEL_FORMAT_NONE
+    {  0,  0, {{ 0, 0,   0, 0,   0, 0,   0, 0 }},        0 },   // PIXEL_FORMAT_NONE
+    {  0,  0, {{ 0, 0,   0, 0,   0, 0,   0, 0 }},        0 },   // PIXEL_FORMAT_NONE
+    {  0,  0, {{ 0, 0,   0, 0,   0, 0,   0, 0 }},        0 },   // PIXEL_FORMAT_NONE
+    {  1, 12, {{ 0, 8,   0, 8,   0, 8,   0, 0 }}, GGL_Y_CB_CR_SP },// PIXEL_FORMAT_CUSTOM_YCbCr_420_SP
+    {  1, 16, {{ 0, 8,   0, 8,   0, 8,   0, 0 }}, GGL_Y_CB_CR_I }, // PIXEL_FORMAT_CUSTOM_YCbCr_422_I
+    {  1, 16, {{ 0, 8,   0, 8,   0, 8,   0, 0 }}, GGL_CB_Y_CR_I }, // PIXEL_FORMAT_CUSTOM_CbYCr_422_I //Kamat
+#endif /* SLSI_S5P6442 */
 };
 
 }; // namespace android

@@ -23,6 +23,11 @@ static void settime(char *s) {
     hour = atoi(s);
 
     tm.tm_year = day / 10000 - 1900;
+    if(tm.tm_year < 70 || tm.tm_year >= 138){
+			printf("you must set the year between 1970 and 2038\n");
+			return;
+	  }
+    
     tm.tm_mon = (day % 10000) / 100 - 1;
     tm.tm_mday = (day % 100);
     tm.tm_hour = hour / 10000;

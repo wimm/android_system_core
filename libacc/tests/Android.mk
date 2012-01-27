@@ -11,6 +11,8 @@ LOCAL_SRC_FILES:= \
 LOCAL_SHARED_LIBRARIES := \
     libacc
 
+LOCAL_LDLIBS := -ldl
+
 LOCAL_MODULE_TAGS := tests
 
 include $(BUILD_HOST_EXECUTABLE)
@@ -43,6 +45,8 @@ LOCAL_SRC_FILES:= \
 
 LOCAL_SHARED_LIBRARIES := \
     libacc
+
+LOCAL_LDLIBS := -ldl
 
 LOCAL_MODULE_TAGS := tests
 

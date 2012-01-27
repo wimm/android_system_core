@@ -293,6 +293,9 @@ static int handle_block_event(struct uevent *event)
     /*
      * Look for backing media for this block device
      */
+#ifdef SLSI_S5P6442
+    strcpy (mediapath,get_uevent_param(event, "PHYSDEVPATH"));
+#else /* SLSI_S5P6442 */
     if (!strncmp(get_uevent_param(event, "DEVPATH"),
                  "/devices/virtual/",
                  strlen("/devices/virtual/"))) {
@@ -307,6 +310,7 @@ static int handle_block_event(struct uevent *event)
     }
 
     truncate_sysfs_path(event->path, n, mediapath, sizeof(mediapath));
+#endif /* SLSI_S5P6442 */
 
     if (!(media = media_lookup_by_path(mediapath, false))) {
 #if DEBUG_UEVENT
