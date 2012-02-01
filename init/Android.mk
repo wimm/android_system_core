@@ -18,7 +18,7 @@ LOCAL_SRC_FILES:= \
 	../../../bootable/recovery/mtdutils/mtdutils.c \
 	../../../external/fw_env/fw_env.c # keith 2010.12.01 yuck, but whatever
 
-LOCAL_C_INCLUDES := external/fw_env bootable/recovery/mtdutils vendor/wimm/common/tools
+LOCAL_C_INCLUDES := external/fw_env bootable/recovery/mtdutils device/wimm/common/tools
 
 ifeq ($(strip $(INIT_BOOTCHART)),true)
 LOCAL_SRC_FILES += bootchart.c
