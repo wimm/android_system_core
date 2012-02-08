@@ -325,6 +325,51 @@ int do_mount(int nargs, char **args)
         }
 
         goto exit_success;
+    } else if (!strncmp(source, "mtdr@", 5)) {
+        n = mtd_name_to_number(source + 5);
+        if (n < 0) {
+            return -1;
+        }
+
+        sprintf(tmp, "/dev/block/mtdrblock%d", n);
+
+        if (wait)
+            wait_for_file(tmp, COMMAND_RETRY_TIMEOUT);
+        if (mount(tmp, target, system, flags, options) < 0) {
+            return -1;
+        }
+
+        goto exit_success;
+    } else if (!strncmp(source, "otpu@", 5)) {
+        n = mtd_name_to_number(source + 5);
+        if (n < 0) {
+            return -1;
+        }
+
+        sprintf(tmp, "/dev/block/mtdotpuserblock%d", n);
+
+        if (wait)
+            wait_for_file(tmp, COMMAND_RETRY_TIMEOUT);
+        if (mount(tmp, target, system, flags, options) < 0) {
+            return -1;
+        }
+
+        goto exit_success;
+    } else if (!strncmp(source, "otpf@", 5)) {
+        n = mtd_name_to_number(source + 5);
+        if (n < 0) {
+            return -1;
+        }
+
+        sprintf(tmp, "/dev/block/mtdotpfactoryblock%d", n);
+
+        if (wait)
+            wait_for_file(tmp, COMMAND_RETRY_TIMEOUT);
+        if (mount(tmp, target, system, flags, options) < 0) {
+            return -1;
+        }
+
+        goto exit_success;
     } else if (!strncmp(source, "loop@", 5)) {
         int mode, loop, fd;
         struct loop_info info;

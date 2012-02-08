@@ -47,6 +47,23 @@
 
 #define PERSISTENT_PROPERTY_DIR  "/data/property"
 
+#ifdef TARGET_WIMM
+#include "fw_env.h"
+#include "wimmtools.h"
+
+void update_serial_from_device_id(const char* id)
+{
+    char serial[MAX_SERIAL_LENGTH+1];
+    size_t serial_len = sizeof(serial);
+    
+    // if device id is legit, set serial as well. If not, bail
+    if (deviceid_to_serial(id, serial, &serial_len) != 0)
+        return;
+
+    property_set("ro.serialno", serial);
+}    
+#endif
+
 static int persistent_properties_loaded = 0;
 static int property_area_inited = 0;
 
@@ -70,6 +87,14 @@ struct {
     { "net.dns",          AID_RADIO,    0 },
     { "sys.usb.config",   AID_RADIO,    0 },
     { "net.",             AID_SYSTEM,   0 },
+#ifdef TARGET_WIMM
+    { "dev.id",           AID_SHELL,    0 },
+    { "dev.id",           AID_SYSTEM,   0 },
+    { "dev.devkey",       AID_SHELL,    0 },
+    { "dev.devkey",       AID_SYSTEM,   0 },
+    { "dev.reset",        AID_SHELL,    0 },
+    { "dev.reset",        AID_SYSTEM,   0 },
+#endif
     { "dev.",             AID_SYSTEM,   0 },
     { "runtime.",         AID_SYSTEM,   0 },
     { "hw.",              AID_SYSTEM,   0 },
@@ -289,6 +314,15 @@ int property_set(const char *name, const char *value)
     if(valuelen >= PROP_VALUE_MAX) return -1;
     if(namelen < 1) return -1;
 
+#ifdef TARGET_WIMM
+    if (strcmp("dev.id", name) == 0)
+    {
+        set_device_id(value);
+
+        return 0;
+    }    
+#endif
+
     pi = (prop_info*) __system_property_find(name);
 
     if(pi != 0) {
@@ -334,6 +368,15 @@ int property_set(const char *name, const char *value)
          */
         write_persistent_property(name, value);
     }
+#ifdef TARGET_WIMM
+    else if (persistent_properties_loaded &&
+            strncmp("dev.", name, 4) == 0)
+    {
+        if (env_set(name+4, value) == 0)
+            env_write();
+    }    
+#endif
+
     property_changed(name, value);
     return 0;
 }
@@ -508,6 +551,61 @@ static void load_persistent_properties()
 void property_init(bool load_defaults)
 {
     init_property_area();
+
+#ifdef TARGET_WIMM
+    char name[PROP_NAME_MAX];
+
+    const char* next = NULL;
+    
+    if (env_init() == 0)
+    {
+        while(1)
+        {
+            next = env_get_next(next);
+            
+            if (next == NULL)
+                break;
+            
+            const char* value = strchr(next, '=');
+            
+            if (value == NULL)
+                continue;
+            
+            if (value - next >= PROP_NAME_MAX-5)
+                continue;
+            
+            if (strlen(++value) >= PROP_VALUE_MAX)
+                continue;
+                
+            strcpy(name, "dev.");
+            memcpy(name+4, next, value-next-1);
+            name[4+value-next-1] = 0;
+            property_set(name, value);
+        }
+    }
+
+    char id[DEVICE_ID_LENGTH+1];
+    size_t len = sizeof(id);
+    int devkey = 0;
+    
+    if (get_device_id(id, &len) == 0)
+    {
+        update_serial_from_device_id(id);
+        
+        devkey = check_devkey_valid_for_id(id, property_get("dev.devkey")) == 0;
+    }
+
+    if (devkey)
+    {
+        property_set("ro.secure", "0");
+        property_set("ro.debuggable", "1");
+    }
+    else
+    {
+        property_set("ro.secure", "1");
+        property_set("ro.debuggable", "0");
+    }
+#endif
     if (load_defaults)
         load_properties_from_file(PROP_PATH_RAMDISK_DEFAULT);
 }

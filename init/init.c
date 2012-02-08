@@ -561,14 +561,15 @@ static int console_init_action(int nargs, char **args)
             "\n"
             "\n"
             "\n"  // console is 40 cols x 30 lines
+	    "   A N D R O I D\n"
             "\n"
             "\n"
             "\n"
             "\n"
             "\n"
             "\n"
-            "\n"
-            "             A N D R O I D ";
+            "\n";
+            //"             A N D R O I D ";
             write(fd, msg, strlen(msg));
             close(fd);
         }
@@ -590,7 +591,12 @@ static int set_init_properties_action(int nargs, char **args)
     else
         property_set("ro.factorytest", "0");
 
+#ifdef TARGET_WIMM
+    if (serialno[0])
+        property_set("ro.serialno", serialno);
+#else
     property_set("ro.serialno", serialno[0] ? serialno : "");
+#endif
     property_set("ro.bootmode", bootmode[0] ? bootmode : "unknown");
     property_set("ro.baseband", baseband[0] ? baseband : "unknown");
     property_set("ro.carrier", carrier[0] ? carrier : "unknown");
@@ -610,6 +616,11 @@ static int property_service_init_action(int nargs, char **args)
      * that /data/local.prop cannot interfere with them.
      */
     start_property_service();
+
+#ifdef TARGET_WIMM
+    // this has to be done after start_property_service
+    clearfactoryreset();
+#endif
     return 0;
 }
 
@@ -721,7 +732,16 @@ int main(int argc, char **argv)
     queue_builtin_action(console_init_action, "console_init");
     queue_builtin_action(set_init_properties_action, "set_init_properties");
 
+<<<<<<< HEAD
     /* execute all the boot actions to get us started */
+=======
+#ifdef TARGET_WIMM
+    // this has to be done after property_init but before init actions are called
+    checkfactoryreset();
+#endif
+
+        /* execute all the boot actions to get us started */
+>>>>>>> Merge from WIMM master.
     action_for_each_trigger("init", action_add_queue_tail);
 
     /* skip mounting filesystems in charger mode */

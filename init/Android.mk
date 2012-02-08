@@ -17,6 +17,26 @@ LOCAL_SRC_FILES:= \
 	ueventd.c \
 	ueventd_parser.c
 
+ifeq ($(TARGET_PRODUCT),wimmemu)
+LOCAL_SRC_FILES+= \
+	checkfactoryreset.c \
+	verify_system_emu.c \
+	getdevkey_init.c \
+	setbootsel_init.c \
+	../../../bootable/recovery/mtdutils/mtdutils.c \
+	../../../external/fw_env/fw_env.c # keith 2010.12.01 yuck, but whatever
+else
+LOCAL_SRC_FILES+= \
+	checkfactoryreset.c \
+	verify_system.c \
+	getdevkey_init.c \
+	setbootsel_init.c \
+	../../../bootable/recovery/mtdutils/mtdutils.c \
+	../../../external/fw_env/fw_env.c # keith 2010.12.01 yuck, but whatever
+endif
+
+LOCAL_C_INCLUDES := external/fw_env bootable/recovery/mtdutils device/wimm/common/tools
+
 ifeq ($(strip $(INIT_BOOTCHART)),true)
 LOCAL_SRC_FILES += bootchart.c
 LOCAL_CFLAGS    += -DBOOTCHART=1
@@ -28,7 +48,7 @@ LOCAL_FORCE_STATIC_EXECUTABLE := true
 LOCAL_MODULE_PATH := $(TARGET_ROOT_OUT)
 LOCAL_UNSTRIPPED_PATH := $(TARGET_ROOT_OUT_UNSTRIPPED)
 
-LOCAL_STATIC_LIBRARIES := libcutils libc
+LOCAL_STATIC_LIBRARIES := libcutils libc libz wimmtools
 
 include $(BUILD_EXECUTABLE)
 

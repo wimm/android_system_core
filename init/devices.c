@@ -82,6 +82,74 @@ static list_declare(sys_perms);
 static list_declare(dev_perms);
 static list_declare(platform_names);
 
+#if 1
+static struct perms_ wimm_devperms[] = {
+
+    { "/dev/null",          NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/zero",        	NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/full",          NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/ptmx",          NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/tty",           NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/random",        NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/urandom",       NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/ashmem",        NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/binder",        NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/mem",           NULL,	0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/log/",          NULL,	0662,   AID_ROOT,       AID_LOG,        1 },
+	{ "/dev/android_adb",   NULL,	0660,   AID_ADB,        AID_ADB,        0 },
+    { "/dev/android_adb_enable", NULL, 0660, AID_ADB,        AID_ADB,       0 },
+	{ "/dev/uinput",        NULL,	0660,   AID_SYSTEM,     AID_BLUETOOTH,  0 },
+    { "/dev/alarm",         NULL,	0664,   AID_SYSTEM,     AID_RADIO,      0 },
+    { "/dev/tty0",          NULL,	0660,   AID_ROOT,       AID_SYSTEM,     0 },
+    { "/dev/graphics/",     NULL,	0660,   AID_ROOT,       AID_GRAPHICS,   1 },	
+    { "/dev/input/",        NULL,	0660,   AID_ROOT,       AID_INPUT,      1 },
+    { "/dev/eac",           NULL,	0660,   AID_ROOT,       AID_AUDIO,      0 },
+    { "/dev/cam",           NULL,	0660,   AID_ROOT,       AID_CAMERA,     0 },
+    { "/dev/pmem",          NULL,	0660,   AID_SYSTEM,     AID_GRAPHICS,   0 },
+    { "/dev/pmem_gpu1",     NULL,	0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_render",   NULL,	0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_stream",   NULL,	0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_preview",  NULL,	0666,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_picture",  NULL,	0660,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_jpeg",     NULL,	0666,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_skia",     NULL,	0666,   AID_SYSTEM,     AID_GRAPHICS,   1 },
+    { "/dev/pmem_adsp",     NULL,	0660,   AID_SYSTEM,     AID_AUDIO,      1 },
+    { "/dev/pmem_camera",   NULL,	0660,   AID_SYSTEM,     AID_CAMERA,     1 },
+	{ "/dev/snd/",          NULL,	0660,   AID_SYSTEM,     AID_AUDIO,      1 },
+	{ "/dev/snd/dsp",       NULL,	0660,   AID_SYSTEM,     AID_AUDIO,      0 },
+    { "/dev/snd/dsp1",      NULL,	0660,   AID_SYSTEM,     AID_AUDIO,      0 },
+    { "/dev/snd/mixer",     NULL,	0660,   AID_SYSTEM,     AID_AUDIO,      0 },
+	{ "/dev/bma150",        NULL,	0640,   AID_COMPASS,    AID_SYSTEM,     0 },
+	{ "/dev/yas529",        NULL,	0640,   AID_COMPASS,    AID_SYSTEM,     0 },
+	{ "/dev/s3c-mfc",  	    NULL,	0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-rotator",   NULL,	0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-jpg",       NULL,	0666,   AID_SYSTEM,	    AID_CAMERA,   	1 },
+    { "/dev/s3c-g3d",       NULL,	0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-pp",   	    NULL,	0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-cmm", 	    NULL,	0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+	{ "/dev/s3c-mfc",  	    NULL,	0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-rotator",   NULL,	0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-jpg",       NULL,	0666,   AID_SYSTEM,	    AID_CAMERA,   	1 },
+    { "/dev/s3c-g3d",       NULL,	0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-pp",   	    NULL,	0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-cmm", 	    NULL,	0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-g2d", 	    NULL,	0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c-mem", 	    NULL,	0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/graphics", 	    NULL,	0664,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/video0",  	    NULL,	0666,   AID_SYSTEM,	    AID_CAMERA,     1 },
+    { "/dev/video1",  	    NULL,	0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+	{ "/dev/video2",  	    NULL,	0666,   AID_SYSTEM,	    AID_GRAPHICS,   1 },
+    { "/dev/s3c2410_serial0",NULL,	0666,  AID_BLUETOOTH,  AID_BLUETOOTH,  0 },
+    { "/dev/s3c2410_serial1",NULL,	0666,  AID_ROOT,      	AID_ROOT,       0 },
+    { "/dev/s3c2410_serial2",NULL,	0666,  AID_GPS,        AID_GPS,        0 },
+    { "/dev/i2c-0",			 NULL,	0666,  AID_GPS,        AID_GPS,        0 },
+    { "/dev/i2c-1",          NULL,	0666,  AID_GPS,        AID_GPS,        0 },
+    { "/dev/i2c-2",          NULL,	0666,  AID_GPS,        AID_GPS,        0 },
+    { "/dev/i2c-3",          NULL,	0666,  AID_GPS,        AID_GPS,        0 },
+    { NULL, NULL, 0, 0, 0, 0 },
+};
+#endif
+
 int add_dev_perms(const char *name, const char *attr,
                   mode_t perm, unsigned int uid, unsigned int gid,
                   unsigned short prefix) {
@@ -141,6 +209,36 @@ void fixup_sys_perms(const char *upath)
     }
 }
 
+#if 1
+static int get_device_perm_inner(struct perms_ *perms, const char *path,
+						unsigned *uid, unsigned *gid, mode_t *perm)
+{
+	int i;
+
+	INFO("get_device_perm_inner()\n");
+	
+	for(i = 0; perms[i].name; i++)
+	{
+		if(perms[i].prefix){
+			if(strncmp(path, perms[i].name, strlen(perms[i].name)))
+				continue;
+		}
+		else{
+			if(strcmp(path, perms[i].name))
+				continue;
+		}
+
+		*uid = perms[i].uid;
+		*gid = perms[i].gid;
+		*perm = perms[i].perm;
+
+		return 0;
+	}
+
+	return -1;
+}
+#endif
+
 static mode_t get_device_perm(const char *path, unsigned *uid, unsigned *gid)
 {
     mode_t perm;
@@ -148,6 +246,14 @@ static mode_t get_device_perm(const char *path, unsigned *uid, unsigned *gid)
     struct perm_node *perm_node;
     struct perms_ *dp;
 
+#if 1
+	/* DK: for wimm device add */
+	if(get_device_perm_inner(wimm_devperms, path, uid, gid, &perm)  == 0){
+		return perm;
+	}
+	else{
+#endif
+		
     /* search the perms list in reverse so that ueventd.$hardware can
      * override ueventd.rc
      */
@@ -170,6 +276,7 @@ static mode_t get_device_perm(const char *path, unsigned *uid, unsigned *gid)
     *uid = 0;
     *gid = 0;
     return 0600;
+}
 }
 
 static void make_device(const char *path,
