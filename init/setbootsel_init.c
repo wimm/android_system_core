@@ -8,6 +8,7 @@
 #include <fcntl.h>
 
 #include "init.h"
+#include "fw_env.h"
 
 const char* BOOTSEL = "bootsel";
 
@@ -20,7 +21,7 @@ int set_bootsel(int secondary)
 
 	if (secondary != was_secondary)
 	{
-        NOTICE("toggling boot selector (%i -> %i)\n", was_secondary, secondary);
+        //NOTICE("toggling boot selector (%i -> %i)\n", was_secondary, secondary);
         
         // We have to call env directly here because persistent properties aren't
         // yet loaded so dev.* properties are not yet getting written to flash.
@@ -28,7 +29,7 @@ int set_bootsel(int secondary)
         // here.
 	    if (env_set(BOOTSEL, secondary ? "1" : "0") != 0)
 	    {
-            ERROR("can't set bootsel\n");
+            //ERROR("can't set bootsel\n");
             return -1;
         }
         env_write();
