@@ -523,6 +523,12 @@ static int property_init_action(int nargs, char **args)
 {
     INFO("property init\n");
     property_init();
+
+#ifdef TARGET_WIMM
+    // this has to be done after property_init but before init actions are called
+    checkfactoryreset();
+#endif
+
     return 0;
 }
 
@@ -602,6 +608,7 @@ static int set_init_properties_action(int nargs, char **args)
     property_set("ro.hardware", hardware);
     snprintf(tmp, PROP_VALUE_MAX, "%d", revision);
     property_set("ro.revision", tmp);
+
     return 0;
 }
 
@@ -618,6 +625,7 @@ static int property_service_init_action(int nargs, char **args)
     // this has to be done after start_property_service
     clearfactoryreset();
 #endif
+
     return 0;
 }
 
@@ -720,11 +728,6 @@ int main(int argc, char **argv)
     queue_builtin_action(keychord_init_action, "keychord_init");
     queue_builtin_action(console_init_action, "console_init");
     queue_builtin_action(set_init_properties_action, "set_init_properties");
-
-#ifdef TARGET_WIMM
-    // this has to be done after property_init but before init actions are called
-    checkfactoryreset();
-#endif
 
         /* execute all the boot actions to get us started */
     action_for_each_trigger("init", action_add_queue_tail);
