@@ -624,6 +624,7 @@ static int property_service_init_action(int nargs, char **args)
 #ifdef TARGET_WIMM
     // this has to be done after start_property_service
     clearfactoryreset();
+    clearfullpowerdown();
 #endif
 
     return 0;

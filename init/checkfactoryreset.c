@@ -9,11 +9,15 @@
 #include <errno.h>
 #include <sys/stat.h>
 
+#include <fcntl.h>
+
 #include "mtdutils.h"
 #include "property_service.h"
 #include "init.h"
 
 // must stay in sync with values in update.c
+const char* FULL_POWER_DOWN_KEY = "dev.powerdown";
+const char* POWER_DOWN_FULL = "full";
 const char* RESET_KEY = "dev.reset";
 const char* RESET_FULL = "full";
 const char* RESET_POSTINSTALL = "postinstall";
@@ -58,12 +62,44 @@ int do_factory_reset()
     return 0;
 }
 
+void schedulefullpowerdown()
+{
+    int fd;
+    fd = open("/sys/class/i2c-adapter/i2c-1/1-0004/gg", O_WRONLY);
+    if (fd >= 0) {
+	write(fd, "57005\n", 6);
+        close(fd);
+    }
+    else
+	puts("In schedulefullpowerdown(), error opening file....\n");
+}
+
 int checkfactoryreset()
 {
     const char* value = property_get(RESET_KEY);
+    const char* fpd_value = property_get(FULL_POWER_DOWN_KEY);
     
-    if ((value != NULL) && (strcmp(value, RESET_FULL) == 0))
+    // First see if next shutdown should be a full shutdown
+    //  Tell the kernel if so
+    if ((fpd_value != NULL) && (strcmp(fpd_value, POWER_DOWN_FULL) == 0)) {
+	schedulefullpowerdown();
+    }
+
+    if ((value != NULL) && (strcmp(value, RESET_FULL) == 0)) {
         return do_factory_reset();
+    }
+    
+    return 0;
+}
+
+int clearfullpowerdown()
+{
+    const char* value = property_get(FULL_POWER_DOWN_KEY);
+    
+    if (value != NULL)
+    {
+        property_set(FULL_POWER_DOWN_KEY, "");
+    }
     
     return 0;
 }
