@@ -98,14 +98,22 @@ extern "C" {
  * Simplified macro to send a debug log message using the current LOG_TAG.
  */
 #ifndef LOGD
+#if LOG_NDEBUG
+#define LOGD(...)   ((void)0)
+#else
 #define LOGD(...) ((void)LOG(LOG_DEBUG, LOG_TAG, __VA_ARGS__))
+#endif
 #endif
 
 #ifndef LOGD_IF
+#if LOG_NDEBUG
+#define LOGD_IF(cond, ...)   ((void)0)
+#else
 #define LOGD_IF(cond, ...) \
     ( (CONDITION(cond)) \
     ? ((void)LOG(LOG_DEBUG, LOG_TAG, __VA_ARGS__)) \
     : (void)0 )
+#endif
 #endif
 
 /*
