@@ -137,6 +137,11 @@ int __android_log_write(int prio, const char *tag, const char *msg)
 
     if (!tag)
         tag = "";
+            
+#ifdef NDEBUG
+    if ((prio == ANDROID_LOG_DEBUG) && ((strcmp(tag, "dhcpcd") == 0) || (strcmp(tag, "wpa_supplicant") == 0)))
+        return 0;
+#endif
 
     /* XXX: This needs to go! */
     if (!strcmp(tag, "HTC_RIL") ||
@@ -165,6 +170,11 @@ int __android_log_buf_write(int bufID, int prio, const char *tag, const char *ms
 
     if (!tag)
         tag = "";
+            
+#ifdef NDEBUG
+    if ((prio == ANDROID_LOG_DEBUG) && ((strcmp(tag, "dhcpcd") == 0) || (strcmp(tag, "wpa_supplicant") == 0)))
+        return 0;
+#endif
 
     /* XXX: This needs to go! */
     if (!strcmp(tag, "HTC_RIL") ||
