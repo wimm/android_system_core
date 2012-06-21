@@ -90,6 +90,8 @@ struct {
     { "dev.devkey",       AID_SYSTEM,   0 },
     { "dev.reset",        AID_SHELL,    0 },
     { "dev.reset",        AID_SYSTEM,   0 },
+    { "dev.powerdown",    AID_SHELL,    0 },
+    { "dev.powerdown",    AID_SYSTEM,   0 },
 #endif
     { "dev.",             AID_SYSTEM,   0 },
     { "runtime.",         AID_SYSTEM,   0 },
