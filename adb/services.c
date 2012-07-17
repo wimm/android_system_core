@@ -288,12 +288,14 @@ static int create_subprocess(const char *cmd, const char *arg0, const char *arg1
     if(grantpt(ptm) || unlockpt(ptm) ||
        ((devname = (char*) ptsname(ptm)) == 0)){
         printf("[ trouble with /dev/ptmx - %s ]\n", strerror(errno));
+        adb_close(ptm);
         return -1;
     }
 
     pid = fork();
     if(pid < 0) {
         printf("- fork failed: %s -\n", strerror(errno));
+        adb_close(ptm);
         return -1;
     }
 
